@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ============ EDIT: page title + description (shows in browser tab & search results) ============ -->
+  <title>Nakul — machine learning &amp; the geometry of dimensionality reduction</title>
+  <meta name="description" content="Personal site of Nakul, a PhD candidate working on the theoretical foundations of dimensionality reduction.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --paper:  #FBFAF7;
+      --ink:    #1C1B1F;
+      --muted:  #605E66;
+      --line:   #E6E3DB;
+      --accent: #33478F;
+      --accent-soft: rgba(51, 71, 143, .12);
+      --maxw: 44rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper:  #141317;
+        --ink:    #ECEAE3;
+        --muted:  #9A97A1;
+        --line:   #2A2830;
+        --accent: #98A6E8;
+        --accent-soft: rgba(152, 166, 232, .14);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .wrap {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-thickness: 1px;
+      transition: opacity .15s ease;
+    }
+    a:hover { opacity: .68; }
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    /* ---------- hero ---------- */
+    header { padding: clamp(3.5rem, 12vw, 7rem) 0 clamp(2.5rem, 7vw, 4rem); }
+
+    .hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    h1 {
+      font-family: "Spectral", Georgia, serif;
+      font-weight: 500;
+      font-size: clamp(2.6rem, 8vw, 4.1rem);
+      line-height: 1.02;
+      letter-spacing: -0.015em;
+      margin: 0 0 1rem;
+    }
+
+    .role {
+      font-family: "Spectral", Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1.15rem, 3.5vw, 1.4rem);
+      color: var(--muted);
+      margin: 0 0 1.75rem;
+      max-width: 32ch;
+    }
+
+    .intro { margin: 0 0 2rem; max-width: 60ch; }
+
+    /* point-cloud motif — nods to a neighbour graph collapsing to low dimensions */
+    .motif { flex: 0 0 auto; width: clamp(96px, 22vw, 150px); height: auto; }
+    .motif circle { fill: var(--accent); }
+    .motif line { stroke: var(--accent); stroke-width: 1; opacity: .35; }
+    @media (max-width: 560px) { .motif { display: none; } }
+
+    /* link row */
+    .links {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      padding: 0;
+      margin: 0;
+      font-size: 0.98rem;
+    }
+
+    /* ---------- sections ---------- */
+    section {
+      border-top: 1px solid var(--line);
+      padding: 2.75rem 0;
+    }
+
+    h2 {
+      font-family: "Spectral", Georgia, serif;
+      font-weight: 500;
+      font-size: 1.25rem;
+      margin: 0 0 1.25rem;
+    }
+
+    p { margin: 0 0 1rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* research themes */
+    .theme { margin-bottom: 1.5rem; }
+    .theme:last-child { margin-bottom: 0; }
+    .theme h3 {
+      font-family: "Spectral", Georgia, serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin: 0 0 .3rem;
+    }
+    .theme p { color: var(--muted); }
+
+    /* work / publication entries */
+    .entry {
+      display: grid;
+      grid-template-columns: 3.5rem 1fr;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .entry:first-of-type { border-top: 1px solid var(--line); }
+    .year { color: var(--muted); font-variant-numeric: tabular-nums; padding-top: .1rem; }
+    .entry-title { font-weight: 500; }
+    .entry-meta { color: var(--muted); font-size: .95rem; }
+    .entry-meta a { color: var(--muted); }
+    @media (max-width: 480px) {
+      .entry { grid-template-columns: 1fr; gap: .25rem; }
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 2.5rem 0 4rem;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    /* one quiet load reveal, disabled for reduced-motion users */
+    @media (prefers-reduced-motion: no-preference) {
+      header, section, footer { animation: rise .6s ease both; }
+      @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- ==================== HERO ==================== -->
+    <header>
+      <div class="hero-top">
+        <div>
+          <!-- EDIT: your name -->
+          <h1>Nakul<br>[Last&nbsp;name]</h1>
+          <!-- EDIT: one line on who you are -->
+          <p class="role">PhD candidate — machine learning and the geometry of dimensionality reduction</p>
+        </div>
+
+        <!-- decorative point cloud; purely visual -->
+        <svg class="motif" viewBox="0 0 200 200" aria-hidden="true">
+          <line x1="40" y1="60" x2="52" y2="54"/>
+          <line x1="52" y1="54" x2="63" y2="66"/>
+          <line x1="72" y1="58" x2="84" y2="68"/>
+          <line x1="95" y1="62" x2="104" y2="54"/>
+          <line x1="56" y1="110" x2="68" y2="120"/>
+          <line x1="76" y1="112" x2="90" y2="116"/>
+          <line x1="106" y1="122" x2="122" y2="128"/>
+          <line x1="138" y1="132" x2="152" y2="136"/>
+          <g>
+            <circle cx="40" cy="60" r="2.4" opacity=".85"/>
+            <circle cx="52" cy="54" r="2" opacity=".7"/>
+            <circle cx="48" cy="72" r="1.7" opacity=".55"/>
+            <circle cx="63" cy="66" r="2.2" opacity=".8"/>
+            <circle cx="58" cy="80" r="1.8" opacity=".6"/>
+            <circle cx="72" cy="58" r="2.1" opacity=".75"/>
+            <circle cx="70" cy="74" r="1.6" opacity=".5"/>
+            <circle cx="84" cy="68" r="2.3" opacity=".85"/>
+            <circle cx="80" cy="84" r="1.7" opacity=".55"/>
+            <circle cx="95" cy="62" r="2" opacity=".7"/>
+            <circle cx="92" cy="78" r="1.8" opacity=".6"/>
+            <circle cx="104" cy="54" r="2.2" opacity=".8"/>
+            <circle cx="108" cy="70" r="1.6" opacity=".5"/>
+            <circle cx="116" cy="84" r="1.9" opacity=".65"/>
+            <circle cx="120" cy="64" r="2.1" opacity=".75"/>
+            <circle cx="130" cy="76" r="1.7" opacity=".55"/>
+            <circle cx="126" cy="58" r="2" opacity=".7"/>
+            <circle cx="140" cy="70" r="2.3" opacity=".85"/>
+            <circle cx="138" cy="86" r="1.6" opacity=".5"/>
+            <circle cx="150" cy="62" r="2" opacity=".7"/>
+            <circle cx="156" cy="78" r="1.8" opacity=".6"/>
+            <circle cx="148" cy="52" r="1.7" opacity=".55"/>
+            <circle cx="164" cy="68" r="2.1" opacity=".75"/>
+            <circle cx="160" cy="84" r="1.6" opacity=".5"/>
+            <circle cx="56" cy="110" r="2.2" opacity=".8"/>
+            <circle cx="68" cy="120" r="1.8" opacity=".6"/>
+            <circle cx="60" cy="128" r="1.6" opacity=".5"/>
+            <circle cx="76" cy="112" r="2.1" opacity=".75"/>
+            <circle cx="84" cy="124" r="1.7" opacity=".55"/>
+            <circle cx="72" cy="136" r="1.9" opacity=".65"/>
+            <circle cx="90" cy="116" r="2.3" opacity=".85"/>
+            <circle cx="98" cy="130" r="1.6" opacity=".5"/>
+            <circle cx="88" cy="142" r="1.8" opacity=".6"/>
+            <circle cx="106" cy="122" r="2" opacity=".7"/>
+            <circle cx="114" cy="134" r="1.7" opacity=".55"/>
+            <circle cx="104" cy="146" r="1.6" opacity=".5"/>
+            <circle cx="122" cy="128" r="2.2" opacity=".8"/>
+            <circle cx="130" cy="140" r="1.8" opacity=".6"/>
+            <circle cx="120" cy="150" r="1.6" opacity=".5"/>
+            <circle cx="138" cy="132" r="2.1" opacity=".75"/>
+            <circle cx="146" cy="144" r="1.7" opacity=".55"/>
+            <circle cx="134" cy="120" r="1.9" opacity=".65"/>
+            <circle cx="152" cy="136" r="2" opacity=".7"/>
+            <circle cx="160" cy="126" r="1.8" opacity=".6"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- EDIT: a couple of sentences introducing yourself -->
+      <p class="intro">
+        I work at the intersection of rigorous mathematics and computation, studying why
+        dimensionality-reduction methods behave the way they do — and building the tools to
+        put that understanding to use. Currently a PhD candidate at NC State.
+      </p>
+
+      <!-- EDIT: your links. Delete any you don't want. -->
+      <ul class="links">
+        <li><a href="mailto:you@example.com">Email</a></li>
+        <li><a href="https://github.com/yourusername">GitHub</a></li>
+        <li><a href="https://scholar.google.com/">Google&nbsp;Scholar</a></li>
+        <li><a href="https://www.linkedin.com/in/yourusername">LinkedIn</a></li>
+        <li><a href="cv.pdf">CV&nbsp;(PDF)</a></li>
+      </ul>
+    </header>
+
+    <!-- ==================== ABOUT ==================== -->
+    <section>
+      <h2>About</h2>
+      <!-- EDIT freely -->
+      <p>
+        My research centres on the theoretical foundations of nonlinear dimensionality
+        reduction — the continuum behaviour of methods like t-SNE, the energies they
+        minimise, and how the geometry of the data survives the trip to low dimensions.
+        Alongside the theory I run computational experiments, and I bring the same
+        mathematical lens to applied problems in data science.
+      </p>
+      <p>
+        Outside the core research I'm interested in quantitative finance, numerical
+        linear algebra, and anything where a clean piece of mathematics meets real data.
+      </p>
+    </section>
+
+    <!-- ==================== RESEARCH ==================== -->
+    <section>
+      <h2>Research</h2>
+
+      <div class="theme">
+        <h3>Foundations of dimensionality reduction</h3>
+        <p>Continuum limits and variational energy analysis of t-SNE, and how embedding maps act between topological spaces.</p>
+      </div>
+
+      <div class="theme">
+        <h3>Geometry &amp; structure preservation</h3>
+        <p>When and how symmetries, distances, and neighbourhood structure are preserved by an embedding — proof alongside experiment.</p>
+      </div>
+
+      <div class="theme">
+        <h3>Applied machine learning</h3>
+        <p>Bringing these ideas to practical data-science and quantitative problems.</p>
+      </div>
+    </section>
+
+    <!-- ==================== SELECTED WORK ==================== -->
+    <section>
+      <h2>Selected work</h2>
+
+      <!-- EDIT each entry. Copy a block to add more. Delete the [links] you don't have. -->
+      <div class="entry">
+        <div class="year">2025</div>
+        <div>
+          <div class="entry-title">Paper or project title goes here</div>
+          <div class="entry-meta">
+            Venue or short description ·
+            <a href="#">PDF</a> ·
+            <a href="#">Code</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="year">2024</div>
+        <div>
+          <div class="entry-title">Another title</div>
+          <div class="entry-meta">
+            Venue or short description ·
+            <a href="#">PDF</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PROJECTS ==================== -->
+    <section>
+      <h2>Projects</h2>
+
+      <div class="theme">
+        <h3><a href="#">Project name</a></h3>
+        <p>One line on what it is and what you built.</p>
+      </div>
+
+      <div class="theme">
+        <h3><a href="#">Another project</a></h3>
+        <p>One line on what it is and what you built.</p>
+      </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer>
+      <!-- EDIT -->
+      <p>Raleigh, NC · <a href="mailto:you@example.com">you@example.com</a></p>
+      <p>Built with plain HTML &amp; CSS. Last updated <span id="year"></span>.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // fills in the current year in the footer — nothing else
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
